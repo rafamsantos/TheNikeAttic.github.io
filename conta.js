@@ -2,8 +2,7 @@ var accDisplay = document.getElementById('acc-page-display');
 const buy = document.getElementById('buy-btn');
 function carrinho() {
   var cartEmpty = localStorage.getItem('cartEmpty');
-  var numOP = parseInt(localStorage.getItem('numOfProducts'));
-  if (numOfProducts == 0 || numOfProducts === null) {
+  if (cartEmpty === 'true' || !cartEmpty) {
     accDisplay.innerHTML = `
         <header class="w3-container w3-xlarge">
           <h4 class="w3-left">Carrinho</h4>
@@ -16,41 +15,44 @@ function carrinho() {
     accDisplay.innerHTML = `
     <header class="w3-container w3-xlarge">
     <h4 class="w3-left">Carrinho</h4>
+    <h6 class="w3-right" onclick="limparCar()">limpar carrinho</h6>
       <div class="w3-display-container cart-with-itens">
-        <div id="itens-display" class="itens-display">
+        <div id="itens_display" class="itens-display">
         </div> 
       </div>
-      <div id="buy-btn" class="w3-display-container"><a class="w3-display-topleft buy-itens" onclick="removeIt()">Finalizar Compra</a></div>
+      <span id="preco" style="float: left"></span>
+      <div id="buy-btn" style="width: 100px; display: table; margin-left: 800px; margin-top: -4px"><a class="buy-itens" onclick="finalizarCompra()">Finalizar Compra</a></div>
     </header>`;
-    let listOfProducts = [];
-    let index;
-    const shoppingCart = document.getElementById('itens-display');
-    buy.style.display = 'Initial';
-    for (i = 0; i < numOfProducts; i++) {
-      index = localStorage.getItem('produto' + (numOfProducts + 1));
-      listOfProducts[i] = JSON.parse(index);
-    }
-    for (i = 0; i < listOfProducts.length; i++) {
+    //buy.style.display = 'Initial';
+    let itens = JSON.parse(localStorage.getItem('cart'));
+    let displayItens = document.getElementById('itens_display');
+    console.log(displayItens);
+    for (let key = 0; key < itens.length; key += 1) {
+      console.log(itens[key].name);
+
       const itemBox = document.createElement('div');
-      itemBox.id = 'item' + i;
       itemBox.classList.add('item-box');
+      itemBox.setAttribute('id', 'item' + key.toString());
       itemBox.innerHTML = `
-          <img src="${listOfProducts[i].image}" alt="produto">
-          <span>${listOfProducts[i].name}</span>
+          <img src="${itens[key].image}" alt="produto">
+          <span id="item">${itens[key].name}</span>
           <br>
-          <p>Preço: ${listOfProducts[i].price}
-          Estado:
-          Tamanho:
-          </p>
-          <a onclick="removeIt(${i})">Remover</a>
+          <p>Preço: ${itens[key].price}</p>
+          <p>Estado:${itens[key].condition}</p>
+          <a onclick="removerCar(this.parentElement)">Remover</a>
         `;
-      shoppingCart.appendChild(itemBox);
+      console.log(itemBox);
+      displayItens.appendChild(itemBox);
+      precoTotal();
     }
   }
 }
 
-function compras(haveItens) {
-  if (!haveItens) {
+function compras() {
+  if (
+    !localStorage.getItem('comprasEmpty') ||
+    localStorage.getItem('comprasEmpty') === 'true'
+  ) {
     accDisplay.innerHTML = ` 
   <header class="w3-container w3-xlarge">
     <h4 class="w3-left">Compras</h4>
@@ -59,6 +61,35 @@ function compras(haveItens) {
     <p class="w3-display-middle" style="margin-top: 100px">Você ainda não realizou nenhuma compra</p>
   </div>`;
   } else {
+    accDisplay.innerHTML = `
+    <header class="w3-container w3-xlarge">
+    <h4 class="w3-left">Compras</h4>
+    <h6 class="w3-right" onclick="limparCompras()">limpar compras</h6>
+      <div class="w3-display-container cart-with-itens">
+        <div id="itens_display" class="itens-display">
+        </div> 
+      </div>
+    </header>`;
+    //buy.style.display = 'Initial';
+    let itens = JSON.parse(localStorage.getItem('compras'));
+    let displayItens = document.getElementById('itens_display');
+    console.log(displayItens);
+    for (let key = 0; key < itens.length; key += 1) {
+      console.log(itens[key].name);
+
+      const itemBox = document.createElement('div');
+      itemBox.classList.add('item-box');
+      itemBox.setAttribute('id', 'item' + key.toString());
+      itemBox.innerHTML = `
+          <img src="${itens[key].image}" alt="produto">
+          <span id="item">${itens[key].name}</span>
+          <br>
+          <p>Preço: ${itens[key].price}</p>
+          <p>Estado:${itens[key].condition}</p>
+        `;
+      console.log(itemBox);
+      displayItens.appendChild(itemBox);
+    }
   }
 }
 
